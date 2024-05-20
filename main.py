@@ -1,5 +1,3 @@
-from typing import Union
-import json
 import pathlib
 import os
 from dotenv import load_dotenv
@@ -7,22 +5,26 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi import FastAPI
 
-from langchain_community.vectorstores import FAISS
-from langchain_openai import OpenAIEmbeddings
+from typing import Union
+from fastapi import FastAPI, status, Response
+
+from uuid import uuid4, UUID
+import uvicorn
+from sqlmodel import Session, SQLModel, create_engine, select
+from db import create_db_and_tables
+
+from rotas import ConversaRotas, MensagemRotas
+from db_faiss import DB_faiss
 
 # Carregar variáveis de ambiente do arquivo .env
 env_path = pathlib.Path.cwd() / '.env'
 load_dotenv(dotenv_path=env_path)
-# Usar a chave de API carregada do arquivo .env
-api_key = os.getenv('OPENAI_API_KEY')
-if not api_key:
-    raise ValueError("API key não encontrada. Certifique-se de que o arquivo .env está configurado corretamente.")
 
-embeddings = OpenAIEmbeddings(openai_api_key=api_key, model="text-embedding-3-large")
+app = FastAPI(title="Clara API", description="API para o projeto Clara", version="0.1.0")
 
-db = FAISS.load_local("db_faiss", embeddings, allow_dangerous_deserialization=True)
-
-app = FastAPI()
+@app.on_event("startup")
+def on_startup():
+    create_db_and_tables()
 
 app.add_middleware(
     CORSMiddleware,
@@ -32,6 +34,8 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
+app.include_router(ConversaRotas.router)
+app.include_router(MensagemRotas.router)
 
 class InputSchema(BaseModel):
     query: str
@@ -43,5 +47,6 @@ async def home():
 @app.post('/search')
 async def search(input: InputSchema):
     query = input.query
-    results = db.similarity_search(query, 5)
+    db_faiss = DB_faiss().db_faiss
+    results = db_faiss.similarity_search(query, 5)
     return {'text': [x.page_content for x in results]}
