@@ -6,13 +6,13 @@ from modelos.Mensagem import Mensagem
 
 class Conversa(SQLModel, table=True):
     id: Optional[UUID] = Field(default=None, primary_key=True)
-    codigo_cookie: Optional[str] = Field(default=None)
+    id_cookie: Optional[UUID] = Field(default=None)
 
     class Config:
         orm_mode = True
 
 class ConversaCreate(SQLModel):
-    codigo_cookie: str
+    id_cookie: Optional[UUID] | str
 
 class ConversaComMensagens(Conversa):
     mensagens: list[Mensagem] = Relationship(back_populates="conversa")
