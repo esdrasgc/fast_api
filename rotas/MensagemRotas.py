@@ -47,9 +47,6 @@ def generate_gpt_response(texto:str, historico:List[Mensagem], k:int):
         historico_txt.append({"role": "assistant", "content": h.resposta_gpt if h.resposta_gpt else ""})
 
     messages = [{"role": "system", "content": bot_context}] + historico_txt + [{"role": "user", "content": texto}]
-    print("vV"*100)
-    print(messages)
-    print("vV"*100)
 
     data = {
         "model": "gpt-4o",

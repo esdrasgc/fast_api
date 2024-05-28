@@ -1,7 +1,7 @@
 from enum import Enum
 from uuid import UUID
 from typing import  Optional
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import SQLModel, Field, Relationship, MetaData
 from modelos.Mensagem import Mensagem
 
 class Conversa(SQLModel, table=True):
@@ -9,7 +9,7 @@ class Conversa(SQLModel, table=True):
     id_cookie: Optional[UUID] = Field(default=None)
 
     class Config:
-        orm_mode = True
+        schema = "Conversa" 
 
 class ConversaCreate(SQLModel):
     id_cookie: Optional[UUID] | str

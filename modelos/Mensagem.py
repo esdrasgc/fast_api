@@ -1,7 +1,7 @@
 from enum import Enum
 from uuid import UUID
 from typing import  Optional
-from sqlmodel import SQLModel, Field, Relationship, String
+from sqlmodel import SQLModel, Field, Relationship, String, MetaData
 import datetime
 
 class Mensagem(SQLModel, table=True):
@@ -12,9 +12,8 @@ class Mensagem(SQLModel, table=True):
     criada: Optional[datetime.datetime] = Field(
         default_factory=datetime.datetime.now,
     )
-
     class Config:
-        orm_mode = True
+        schema = "Mensagem" 
 
 class MensagemCreate(SQLModel):
     id_conversa: UUID

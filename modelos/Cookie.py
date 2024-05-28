@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, MetaData
 from typing import  Optional
 from uuid import UUID, uuid4
 
@@ -7,4 +7,4 @@ class Cookie(SQLModel, table=True):
     qtd_acessos: int = 1
 
     class Config:
-        orm_mode = True
+        schema = "Cookie" 

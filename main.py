@@ -45,8 +45,8 @@ async def home():
     return {'hello': 'world'}
 
 @app.post('/search')
-async def search(input: InputSchema):
+async def search(input: InputSchema, k: int = 5):
     query = input.query
     db_faiss = DB_faiss().db_faiss
-    results = db_faiss.similarity_search(query, 5)
+    results = db_faiss.similarity_search(query, k)
     return {'text': [x.page_content for x in results]}
